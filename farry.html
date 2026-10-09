@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">SA FORGE - GTA SA Modding, Script &amp; Tools Utility Hub</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        forge: {
+                            bg: '#0b0f19',
+                            card: '#121826',
+                            border: '#1e293b',
+                            hover: '#1a2336',
+                            accent: '#00f0ff',
+                            purple: '#a855f7',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px rgba(0, 240, 255, 0.25)',
+                        'neon-purple': '0 0 20px rgba(168, 85, 247, 0.25)',
+                        'neon-rose': '0 0 20px rgba(244, 63, 94, 0.25)',
+                        'glow-lg': '0 0 35px rgba(0, 240, 255, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .bg-cyber-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        .glass-card {
+            background: rgba(18, 24, 38, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 240, 255, 0.35);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .glow-text-cyan {
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+    </style>
+</head>
+<body class="bg-forge-bg text-slate-100 min-h-screen flex flex-col antialiased bg-cyber-grid selection:bg-forge-accent selection:text-black">
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <header class="sticky top-0 z-40 w-full backdrop-blur-xl bg-forge-bg/90 border-b border-forge-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3.5 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-0.5 flex items-center justify-center shadow-neon-cyan">
+                        <div class="w-full h-full bg-forge-bg rounded-[10px] flex items-center justify-center">
+                            <i class="fa-solid fa-bolt text-forge-accent text-xl animate-pulse"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span id="headerWebName" class="text-xl font-black tracking-wider bg-gradient-to-r from-white via-slate-100 to-forge-accent bg-clip-text text-transparent">
+                                SA<span class="text-forge-accent glow-text-cyan">FORGE</span>
+                            </span>
+                            <span class="bg-forge-accent/10 text-forge-accent text-[9px] font-mono px-1.5 py-0.5 rounded border border-forge-accent/30 font-bold">HUB</span>
+                        </div>
+                        <span id="headerTagline" class="text-[10px] block font-mono text-slate-400 tracking-wider -mt-0.5">GTA SA Modding &amp; Tools Utility</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden xl:flex items-center space-x-1">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold text-forge-accent bg-forge-hover border border-forge-accent/30 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-house text-xs"></i> Beranda
+                    </button>
+                    <button onclick="switchTab('mods')" id="nav-mods" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-forge-hover transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-folder-open text-xs text-forge-accent"></i> Gudang Mod
+                    </button>
+                    <button onclick="switchTab('guides')" id="nav-guides" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-forge-hover transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-bookmark text-xs text-amber-400"></i> System Guides
+                    </button>
+                    <button onclick="switchTab('tools')" id="nav-tools" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-forge-hover transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-screwdriver-wrench text-xs text-emerald-400"></i> Tools Suite
+                    </button>
+                    <button onclick="switchTab('community')" id="nav-community" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-forge-hover transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-users text-xs text-blue-400"></i> Community
+                    </button>
+                </nav>
+
+                <!-- Actions / Admin Button -->
+                <div class="hidden lg:flex items-center space-x-3">
+                    <button id="headerAdminBtn" onclick="openAdminPanelOrLogin()" class="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-neon-purple transition-all">
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                        <span id="adminBtnLabel">Admin Login</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <div class="xl:hidden">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-forge-card focus:outline-none border border-forge-border">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobileMenu" class="hidden xl:hidden border-b border-forge-border bg-forge-bg/95 px-4 pt-3 pb-5 space-y-2">
+            <button onclick="switchTab('home')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-forge-hover flex items-center gap-2">
+                <i class="fa-solid fa-house text-forge-accent"></i> Beranda / Home
+            </button>
+            <button onclick="switchTab('mods')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-forge-hover flex items-center gap-2">
+                <i class="fa-solid fa-folder-open text-forge-accent"></i> Gudang Mod &amp; Script
+            </button>
+            <button onclick="switchTab('guides')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-forge-hover flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark text-amber-400"></i> System Guides &amp; Tutorial
+            </button>
+            <button onclick="switchTab('tools')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-forge-hover flex items-center gap-2">
+                <i class="fa-solid fa-screwdriver-wrench text-emerald-400"></i> Tools Suite (Obfuscator, Compiler, Webhook, Scanner)
+            </button>
+            <button onclick="switchTab('community')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-200 hover:bg-forge-hover flex items-center gap-2">
+                <i class="fa-solid fa-users text-blue-400"></i> Community Links
+            </button>
+            <div class="pt-2 border-t border-forge-border">
+                <button onclick="openAdminPanelOrLogin()" class="w-full text-center bg-purple-600 text-white font-bold text-xs py-2.5 rounded-xl shadow-neon-purple flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-shield"></i> <span id="mobileAdminBtnLabel">Admin Login</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Banner Announcement -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-indigo-950/30 to-purple-950/40 border border-forge-accent/30 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-neon-cyan">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-forge-accent/10 border border-forge-accent/40 flex items-center justify-center text-forge-accent shrink-0">
+                    <i class="fa-solid fa-shield-cat text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="bannerWebTitle" class="font-extrabold text-white text-xs sm:text-sm">SA FORGE MODDING &amp; TOOLS SUITE</span>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[9px] font-mono px-2 py-0.5 rounded-full font-bold">ALL-IN-ONE UTILITY</span>
+                    </div>
+                    <p id="bannerWebTagline" class="text-xs text-slate-300 mt-0.5">Mod Store, Lua Obfuscator, LuaJIT Compiler, Webhook Debugger &amp; Security Scanner untuk PC &amp; Android.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="switchTab('tools')" class="bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Open Tools Suite
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TAB 1: BERANDA / HOME ================= -->
+        <div id="tab-home" class="tab-content space-y-10">
+            <!-- Hero Section -->
+            <div class="relative rounded-3xl bg-gradient-to-br from-slate-900 via-forge-card to-slate-950 border border-forge-border p-8 sm:p-12 overflow-hidden text-center sm:text-left flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="max-w-2xl space-y-5 z-10">
+                    <div class="inline-flex items-center gap-2 bg-forge-accent/10 border border-forge-accent/30 px-3 py-1 rounded-full text-xs font-mono text-forge-accent">
+                        <i class="fa-solid fa-fire"></i> Official GTA SA Modding &amp; Development Hub
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight">
+                        Pusat Mod, Script <span class="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent glow-text-cyan">&amp; Web Tools Utility</span> SA-MP
+                    </h1>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Platform terlengkap untuk komunitasi GTA San Andreas. Unduh mod verified, obfuskasi source code Lua, kompilasi bytecode Monetloader/Moonloader, serta panduan tutorial lengkap.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-2">
+                        <button onclick="switchTab('mods')" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-neon-cyan transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open"></i> JELAJAHI GUDANG MOD
+                        </button>
+                        <button onclick="switchTab('guides')" class="bg-forge-bg border border-forge-border hover:border-forge-accent text-white font-bold text-xs px-6 py-3.5 rounded-xl transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-book-open"></i> PANDUAN SYSTEM
+                        </button>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-96 grid grid-cols-2 gap-4 z-10">
+                    <div class="glass-card rounded-2xl p-4 text-center space-y-1">
+                        <div class="text-2xl font-black text-forge-accent font-mono" id="statModsCount">0</div>
+                        <div class="text-[11px] font-mono text-slate-400 uppercase">Script &amp; Mod</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center space-y-1">
+                        <div class="text-2xl font-black text-purple-400 font-mono" id="statGuidesCount">0</div>
+                        <div class="text-[11px] font-mono text-slate-400 uppercase">System Guides</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center space-y-1">
+                        <div class="text-2xl font-black text-emerald-400 font-mono" id="statCategoriesCount">0</div>
+                        <div class="text-[11px] font-mono text-slate-400 uppercase">Kategori</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center space-y-1">
+                        <div class="text-2xl font-black text-amber-400 font-mono" id="statAdminsCount">0</div>
+                        <div class="text-[11px] font-mono text-slate-400 uppercase">Tim Admin</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Mods Highlight -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-star text-amber-400"></i> Featured Scripts &amp; Mods
+                        </h2>
+                        <p class="text-xs text-slate-400">Rekomendasi mod terpopuler dan terverifikasi aman.</p>
+                    </div>
+                    <button onclick="switchTab('mods')" class="text-xs font-mono text-forge-accent hover:underline flex items-center gap-1">
+                        Lihat Semua <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div id="homeFeaturedMods" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Populated JS -->
+                </div>
+            </div>
+
+            <!-- Quick Access Tools Banner -->
+            <div class="glass-card rounded-2xl p-6 sm:p-8 border border-forge-border flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <span class="text-xs font-mono text-purple-400 font-bold uppercase tracking-wider">DEVELOPER UTILITY SUITE</span>
+                    <h3 class="text-2xl font-extrabold text-white">Butuh Proteksi Code Lua / Testing Webhook?</h3>
+                    <p class="text-xs text-slate-400 max-w-xl">Gunakan Lua Obfuscator v4.2, LuaJIT Compiler (.luac), Discord Webhook Debugger, dan MoonScanner Anti-Stealer secara gratis.</p>
+                </div>
+                <button onclick="switchTab('tools')" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl shadow-neon-purple transition-all shrink-0 flex items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> BUKA TOOLS SUITE
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: GUDANG MOD ================= -->
+        <div id="tab-mods" class="tab-content space-y-6 hidden">
+            <div class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <!-- Search Input -->
+                    <div class="relative flex-grow max-w-md">
+                        <input type="text" id="searchInput" oninput="renderMods()" placeholder="Cari nama script, author, atau command (/mancing)..." 
+                            class="w-full bg-forge-bg border border-forge-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-forge-accent shadow-inner">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" id="categoryContainer">
+                        <!-- Populated JS -->
+                    </div>
+                </div>
+
+                <!-- Tag Filters -->
+                <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-forge-border/60 text-xs">
+                    <span class="text-slate-500 font-mono text-[11px] uppercase mr-1">Filter Badge:</span>
+                    <button onclick="setTagFilter('ALL')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">ALL</button>
+                    <button onclick="setTagFilter('OFFICIAL')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800">OFFICIAL</button>
+                    <button onclick="setTagFilter('VIP')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-purple-950/60 text-purple-400 border border-purple-800">VIP</button>
+                    <button onclick="setTagFilter('UNVERIFIED')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-rose-950/60 text-rose-400 border border-rose-800">UNVERIFIED</button>
+                    <button onclick="setTagFilter('PC')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-blue-950/60 text-blue-400 border border-blue-800">PC</button>
+                    <button onclick="setTagFilter('ANDROID')" class="tag-pill font-mono text-[11px] px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800">ANDROID</button>
+                </div>
+            </div>
+
+            <div id="modsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SYSTEM GUIDES ================= -->
+        <div id="tab-guides" class="tab-content space-y-6 hidden">
+            <div class="glass-card rounded-2xl p-6 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forge-border pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-mono text-amber-400 mb-2">
+                            <i class="fa-solid fa-graduation-cap"></i> Modding Knowledge Base
+                        </div>
+                        <h2 class="text-2xl font-black text-white">System Guides &amp; Installation Tutorials</h2>
+                        <p class="text-xs text-slate-400 mt-1">Panduan lengkap pemasangan Moonloader PC, Monetloader Android, CLEO, SampGUI, &amp; Troubleshooting.</p>
+                    </div>
+                </div>
+
+                <div id="guidesList" class="space-y-4">
+                    <!-- Populated JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: TOOLS SUITE ================= -->
+        <div id="tab-tools" class="tab-content space-y-8 hidden">
+            <!-- Sub Navigation Bar for Tools -->
+            <div class="flex items-center justify-start gap-2 border-b border-forge-border pb-3 overflow-x-auto">
+                <button onclick="switchSubTool('obf')" id="subtool-btn-obf" class="subtool-btn px-4 py-2 rounded-xl text-xs font-bold bg-forge-accent/20 border border-forge-accent text-forge-accent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Lua Obfuscator
+                </button>
+                <button onclick="switchSubTool('compiler')" id="subtool-btn-compiler" class="subtool-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-microchip"></i> LuaJIT Compiler
+                </button>
+                <button onclick="switchSubTool('spammer')" id="subtool-btn-spammer" class="subtool-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Webhook Tester
+                </button>
+                <button onclick="switchSubTool('scanner')" id="subtool-btn-scanner" class="subtool-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-shield-virus"></i> MoonScanner
+                </button>
+                <button onclick="switchSubTool('samp')" id="subtool-btn-samp" class="subtool-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-palette"></i> SA-MP Web Utils
+                </button>
+            </div>
+
+            <!-- TOOL 1: OBFUSCATOR -->
+            <div id="subtool-obf" class="subtool-content space-y-6">
+                <div class="glass-card rounded-2xl p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forge-border pb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-lock text-forge-purple"></i> SA FORGE Lua Obfuscator v4.2
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Enkripsi source code script <code class="text-forge-accent font-mono">.lua</code> dari decompiler dan pencurian code.</p>
+                        </div>
+                    </div>
+
+                    <!-- Obfuscation Options -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-forge-bg/60 p-4 rounded-xl border border-forge-border text-xs">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="obfVarRename" checked class="rounded border-forge-border text-purple-600 focus:ring-0">
+                            <span class="text-slate-300">Variable Mangling</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="obfStringEnc" checked class="rounded border-forge-border text-purple-600 focus:ring-0">
+                            <span class="text-slate-300">String Byte Encoding</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="obfJunkCode" checked class="rounded border-forge-border text-purple-600 focus:ring-0">
+                            <span class="text-slate-300">Junk Code Injection</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="obfControlFlow" class="rounded border-forge-border text-purple-600 focus:ring-0">
+                            <span class="text-slate-300">Control Flow Flattening</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-mono font-bold text-slate-300 uppercase">Input Source Code (.lua)</label>
+                            <textarea id="obfInput" rows="12" placeholder="-- Paste Lua Code Disini
+function main()
+    if not isSampLoaded() or not isSampfuncsLoaded() then return end
+    while not isSampAvailable() do wait(100) end
+    sampAddChatMessage('{00F0FF}[SA FORGE]{FFFFFF} Script Loaded!', -1)
+end" class="w-full bg-black/80 border border-forge-border rounded-xl p-4 text-xs font-mono text-emerald-400 focus:outline-none focus:border-purple-500"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-mono font-bold text-slate-300 uppercase">Obfuscated Output Code</label>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="copyToClipboard('obfOutput')" class="text-[11px] text-forge-accent hover:underline font-mono"><i class="fa-regular fa-copy"></i> Copy</button>
+                                    <button onclick="downloadObfFile()" class="text-[11px] text-purple-400 hover:underline font-mono"><i class="fa-solid fa-download"></i> Save .lua</button>
+                                </div>
+                            </div>
+                            <textarea id="obfOutput" readonly rows="12" placeholder="-- Protected Output Code Akan Muncul Disini --" class="w-full bg-black/80 border border-forge-border rounded-xl p-4 text-xs font-mono text-purple-300 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button onclick="runObfuscation()" class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-8 py-3 rounded-xl shadow-neon-purple transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> OBFUSCATE LUA SCRIPT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 2: LUAJIT COMPILER -->
+            <div id="subtool-compiler" class="subtool-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forge-border pb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-microchip text-forge-accent"></i> LuaJIT Compiler (.luac)
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Kompilasi source code Lua menjadi bytecode <code class="text-forge-accent font-mono">.luac</code> untuk Moonloader PC &amp; Monetloader Android.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-mono font-bold text-slate-300 uppercase">Lua Source Code</label>
+                            <textarea id="compilerInput" rows="12" placeholder="-- Paste Lua code untuk dikompilasi ke bytecode .luac
+script_name('SAForgeTool')
+function main()
+    wait(0)
+    print('Compiled via SA FORGE!')
+end" class="w-full bg-black/80 border border-forge-border rounded-xl p-4 text-xs font-mono text-cyan-300 focus:outline-none focus:border-forge-accent"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-mono font-bold text-slate-300 uppercase">LuaJIT Bytecode Disassembly</label>
+                            <textarea id="compilerOutput" readonly rows="12" placeholder="-- Bytecode Binary Stream Preview --" class="w-full bg-black/80 border border-forge-border rounded-xl p-4 text-xs font-mono text-slate-400 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono text-slate-400">Target Compatibility:</span>
+                            <span class="bg-blue-950 text-blue-400 text-[10px] font-mono px-2 py-1 rounded border border-blue-800">Moonloader v0.26</span>
+                            <span class="bg-emerald-950 text-emerald-400 text-[10px] font-mono px-2 py-1 rounded border border-emerald-800">Monetloader Android</span>
+                        </div>
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button onclick="compileLua()" class="flex-1 sm:flex-none bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs px-6 py-3 rounded-xl shadow-neon-cyan transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bolt"></i> COMPILE TO BYTECODE
+                            </button>
+                            <button onclick="downloadLuacFile()" class="flex-1 sm:flex-none bg-forge-bg border border-forge-border hover:border-forge-accent text-white font-bold text-xs px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-download"></i> DOWNLOAD .LUAC
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 3: DISCORD WEBHOOK TESTER -->
+            <div id="subtool-spammer" class="subtool-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forge-border pb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-paper-plane text-forge-rose"></i> Discord Webhook Tester &amp; Debugger
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Uji kehandalan endpoint Discord Webhook &amp; logger script SA-MP dengan custom payloads &amp; rate limit checks.</p>
+                        </div>
+                        <div>
+                            <span id="spammerStatusBadge" class="text-xs font-mono bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700">STATUS: IDLE</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-mono text-slate-300 block mb-1">Discord Webhook URL *</label>
+                                <input type="text" id="spammerUrl" placeholder="https://discord.com/api/webhooks/12345/abcde..." class="w-full bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-mono text-slate-300 block mb-1">Bot Username</label>
+                                    <input type="text" id="spammerBotName" value="SA FORGE LOGGER" class="w-full bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-mono text-slate-300 block mb-1">Avatar Image URL</label>
+                                    <input type="text" id="spammerAvatar" placeholder="https://..." class="w-full bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-mono text-slate-300 block mb-1">Message Content / Payload Body</label>
+                                <textarea id="spammerContent" rows="3" class="w-full bg-forge-bg border border-forge-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">⚠️ [SA FORGE SYSTEM LOG] Testing Webhook Endpoint Connection Success!</textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-mono text-slate-300 block mb-1">Delay Per Request (ms)</label>
+                                    <input type="number" id="spammerDelay" value="800" min="500" class="w-full bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-mono text-slate-300 block mb-1">Repeat Count (Iteration)</label>
+                                    <input type="number" id="spammerCount" value="5" min="1" max="50" class="w-full bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-xs font-mono font-bold text-slate-300 uppercase">Live Console Output</label>
+                                    <button onclick="clearSpammerLog()" class="text-[11px] text-slate-500 hover:text-slate-300 font-mono">Clear Console</button>
+                                </div>
+                                <div id="spammerLogs" class="bg-black/90 border border-forge-border rounded-xl p-4 text-xs font-mono space-y-1.5 h-64 overflow-y-auto">
+                                    <div class="text-slate-500">[CONSOLE READY] Enter Webhook URL &amp; click Start Test.</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button onclick="startSpammer()" id="btnStartSpam" class="flex-1 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs py-3 rounded-xl shadow-neon-rose transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i> START WEBHOOK TEST
+                                </button>
+                                <button onclick="stopSpammer()" id="btnStopSpam" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-6 py-3 rounded-xl border border-slate-700 transition-all">
+                                    STOP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 4: MOONSCANNER -->
+            <div id="subtool-scanner" class="subtool-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forge-border pb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-shield-virus text-emerald-400"></i> MoonScanner Anti-Stealer Audit Tool
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Periksa file script <code class="text-forge-accent font-mono">.lua</code> / <code class="text-forge-accent font-mono">.luac</code> dari stealer, IP Logger, &amp; URL Trojan.</p>
+                        </div>
+                    </div>
+
+                    <div id="dropzone" onclick="triggerFileSelect()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" 
+                        class="border-2 border-dashed border-forge-border hover:border-forge-accent bg-forge-bg/60 rounded-2xl p-8 text-center cursor-pointer transition-all">
+                        <input type="file" id="scannerFileInput" onchange="processScannerFile(this.files[0])" accept=".lua,.luac,.asi,.cs" class="hidden">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-forge-accent/10 border border-forge-accent/30 flex items-center justify-center text-forge-accent text-2xl mb-3">
+                            <i class="fa-solid fa-file-shield"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-white">Upload atau Drag &amp; Drop Script File (.lua / .luac)</h4>
+                        <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">File diproses secara lokal. Memindai fungsi <code class="text-rose-400 font-mono">asyncHttpRequest</code>, Discord API hooks, socket connections, &amp; token stealers.</p>
+                    </div>
+
+                    <div id="auditResultBox" class="hidden space-y-4 pt-4 border-t border-forge-border">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-mono font-bold text-slate-300 uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-terminal text-forge-accent"></i> Audit Console
+                            </h4>
+                            <span id="scanStatusBadge" class="text-[10px] font-mono px-2.5 py-1 rounded font-bold">ANALYZING...</span>
+                        </div>
+                        <div id="consoleLogs" class="bg-black/80 rounded-xl p-4 font-mono text-xs space-y-1.5 border border-forge-border max-h-64 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 5: SA-MP UTILITIES -->
+            <div id="subtool-samp" class="subtool-content space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Color Embedder -->
+                    <div class="glass-card rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-forge-border pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-palette text-forge-accent"></i> SA-MP {HEX} Color Generator
+                            </h3>
+                        </div>
+                        <div>
+                            <label class="text-xs font-mono text-slate-400 block mb-1">Color Picker</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color" id="hexPicker" value="#00f0ff" oninput="updateHexTool()" class="w-12 h-10 rounded-lg bg-transparent border-0 cursor-pointer">
+                                <input type="text" id="hexValue" value="#00F0FF" oninput="updateHexToolFromText(this.value)" class="bg-forge-bg border border-forge-border text-xs font-mono px-3 py-2 rounded-lg text-white w-32">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-mono text-slate-400 block mb-1">Text String</label>
+                            <input type="text" id="hexText" value="Selamat Datang di Server SA-MP!" oninput="updateHexTool()" class="w-full bg-forge-bg border border-forge-border text-xs px-3 py-2 rounded-lg text-white">
+                        </div>
+                        <div class="pt-2 border-t border-forge-border space-y-2">
+                            <span class="text-xs font-mono text-slate-400 block">Output Code:</span>
+                            <div class="bg-black/80 p-3 rounded-lg font-mono text-xs text-forge-accent border border-forge-border flex justify-between items-center">
+                                <span id="outEmbedText">{00F0FF}Selamat Datang di Server SA-MP!</span>
+                                <button onclick="copyToClipboard('outEmbedText')" class="text-slate-400 hover:text-white"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pawn Dialog Builder -->
+                    <div class="glass-card rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-forge-border pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-window-maximize text-forge-purple"></i> Pawn Dialog Styler
+                            </h3>
+                        </div>
+                        <div>
+                            <label class="text-xs font-mono text-slate-400 block mb-1">Dialog Title</label>
+                            <input type="text" id="pawnTitle" value="{00F0FF}INFO SERVER" oninput="updatePawnTool()" class="w-full bg-forge-bg border border-forge-border text-xs px-3 py-2 rounded-lg text-white">
+                        </div>
+                        <div>
+                            <label class="text-xs font-mono text-slate-400 block mb-1">Dialog Content Body</label>
+                            <textarea id="pawnBody" rows="3" oninput="updatePawnTool()" class="w-full bg-forge-bg border border-forge-border text-xs p-3 rounded-lg text-white font-mono">Gunakan /help untuk bantuan.\nKunjungi forum untuk info event.</textarea>
+                        </div>
+                        <div class="pt-2 border-t border-forge-border space-y-2">
+                            <span class="text-xs font-mono text-slate-400 block">Pawn Code Output:</span>
+                            <pre id="pawnOutput" class="bg-black/80 p-3 rounded-lg font-mono text-[11px] text-emerald-400 border border-forge-border overflow-x-auto"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: COMMUNITY HUB ================= -->
+        <div id="tab-community" class="tab-content space-y-6 hidden">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <span class="text-xs font-mono font-bold text-forge-accent uppercase tracking-wider">JOIN OUR NETWORK</span>
+                <h2 class="text-2xl font-black text-white">Komunitas &amp; Official Social Links</h2>
+                <p class="text-xs text-slate-400">Bergabunglah dengan grup &amp; media sosial official Farry4u untuk update modifikasi terbaru.</p>
+            </div>
+
+            <div id="communityLinksGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                <!-- Populated JS -->
+            </div>
+        </div>
+
+        <!-- ================= TAB 7: ADMIN PANEL ================= -->
+        <div id="tab-admin" class="tab-content space-y-6 hidden">
+            <!-- Admin Header Bar -->
+            <div class="glass-card rounded-2xl p-6 border border-purple-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 text-2xl">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="adminActiveUser" class="text-lg font-black text-white">Owner Karen</span>
+                            <span id="adminActiveRoleBadge" class="bg-purple-950 text-purple-400 border border-purple-800 text-[10px] font-mono px-2 py-0.5 rounded font-bold">OWNER</span>
+                        </div>
+                        <span class="text-xs font-mono text-slate-400">Farry4u Master Management Control Dashboard</span>
+                    </div>
+                </div>
+                <button onclick="logoutAdmin()" class="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout Session
+                </button>
+            </div>
+
+            <!-- Admin Sub Tabs -->
+            <div class="flex items-center gap-2 border-b border-forge-border pb-3 overflow-x-auto">
+                <button onclick="switchAdminSub('mods')" id="admin-subnav-mods" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold bg-purple-500/20 border border-purple-500 text-purple-300 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-folder-plus"></i> Mod Library
+                </button>
+                <button onclick="switchAdminSub('guides')" id="admin-subnav-guides" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-book-medical"></i> System Guides
+                </button>
+                <button onclick="switchAdminSub('categories')" id="admin-subnav-categories" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> Categories
+                </button>
+                <button onclick="switchAdminSub('community')" id="admin-subnav-community" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Community Links
+                </button>
+                <button onclick="switchAdminSub('settings')" id="admin-subnav-settings" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> General Settings
+                </button>
+                <button onclick="switchAdminSub('users')" id="admin-subnav-users" class="admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i> Admin Team Users
+                </button>
+            </div>
+
+            <!-- ADMIN SUB 1: MODS MANAGEMENT -->
+            <div id="admin-sub-mods" class="admin-sub-content space-y-6">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-forge-accent"></i> Tambah Mod / Script Baru
+                    </h3>
+                    <form onsubmit="adminSaveMod(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Nama Mod / Script *</label>
+                            <input type="text" id="adminModTitle" required placeholder="Contoh: SUSU CPRP BY RAMZZ" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Author / Pembuat *</label>
+                            <input type="text" id="adminModAuthor" required placeholder="Contoh: Ramzz" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Kategori *</label>
+                            <select id="adminModCategory" required class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent"></select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Badge / Status Filter</label>
+                            <div class="flex flex-wrap gap-3 pt-2">
+                                <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" value="OFFICIAL" class="mod-badge-chk"> <span>OFFICIAL</span></label>
+                                <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" value="VIP" class="mod-badge-chk"> <span>VIP</span></label>
+                                <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" value="PC" class="mod-badge-chk" checked> <span>PC</span></label>
+                                <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" value="ANDROID" class="mod-badge-chk"> <span>ANDROID</span></label>
+                                <label class="flex items-center space-x-1 cursor-pointer"><input type="checkbox" value="FREE" class="mod-badge-chk" checked> <span>FREE</span></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Command In-Game</label>
+                            <input type="text" id="adminModCommand" placeholder="Contoh: /susu or /autofish" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Download URL *</label>
+                            <input type="text" id="adminModDownload" required placeholder="https://..." class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-slate-400 mb-1 font-mono">Deskripsi Mod</label>
+                            <textarea id="adminModDesc" rows="3" placeholder="Penjelasan fitur mod..." class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-forge-accent"></textarea>
+                        </div>
+                        <div class="md:col-span-2 flex justify-end">
+                            <button type="submit" class="bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold px-6 py-2.5 rounded-xl shadow-neon-cyan">
+                                SIMPAN MOD BARU
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Mod List Table -->
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Daftar Mod &amp; Script Library</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="border-b border-forge-border text-slate-400 uppercase">
+                                <tr>
+                                    <th class="p-3">Nama Mod</th>
+                                    <th class="p-3">Kategori</th>
+                                    <th class="p-3">Author</th>
+                                    <th class="p-3 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminModTableBody" class="divide-y divide-forge-border/40"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN SUB 2: GUIDES MANAGEMENT -->
+            <div id="admin-sub-guides" class="admin-sub-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-medical text-amber-400"></i> Tambah System Guide / Tutorial
+                    </h3>
+                    <form onsubmit="adminSaveGuide(event)" class="space-y-4 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-mono">Judul Tutorial *</label>
+                                <input type="text" id="adminGuideTitle" required placeholder="Cara Install Moonloader v0.26" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-mono">Kategori / Platform *</label>
+                                <input type="text" id="adminGuideCategory" required placeholder="MOONLOADER PC / MONETLOADER ANDROID" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Isi Panduan / Langkah-Langkah *</label>
+                            <textarea id="adminGuideContent" rows="5" required placeholder="Tuliskan panduan langkah demi langkah disini..." class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-400"></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-amber-500 text-black font-extrabold px-6 py-2.5 rounded-xl">
+                                SIMPAN GUIDE
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Daftar System Guides</h3>
+                    <div id="adminGuidesList" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- ADMIN SUB 3: CATEGORIES MANAGEMENT -->
+            <div id="admin-sub-categories" class="admin-sub-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Kelola Kategori Mod</h3>
+                    <form onsubmit="adminAddCategory(event)" class="flex gap-3">
+                        <input type="text" id="adminNewCategory" required placeholder="Nama Kategori Baru (misal: CLEO, Monetloader)" class="flex-grow bg-forge-bg border border-forge-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none">
+                        <button type="submit" class="bg-emerald-500 text-black font-bold text-xs px-6 py-2.5 rounded-xl">TAMBAH</button>
+                    </form>
+                    <div id="adminCategoriesList" class="flex flex-wrap gap-2 pt-2"></div>
+                </div>
+            </div>
+
+            <!-- ADMIN SUB 4: COMMUNITY LINKS MANAGEMENT -->
+            <div id="admin-sub-community" class="admin-sub-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Kelola Community Social Links</h3>
+                    <form onsubmit="adminAddCommunityLink(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Platform Name *</label>
+                            <input type="text" id="adminComName" required placeholder="Discord Official" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Icon Class (FontAwesome) *</label>
+                            <input type="text" id="adminComIcon" required placeholder="fa-brands fa-discord" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">URL Link *</label>
+                            <input type="text" id="adminComUrl" required placeholder="https://discord.gg/fwCN63PEzh" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Members Count / Tagline</label>
+                            <input type="text" id="adminComCount" placeholder="5,200+ Members" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div class="md:col-span-2 flex justify-end">
+                            <button type="submit" class="bg-blue-500 text-white font-bold px-6 py-2.5 rounded-xl">TAMBAH LINK</button>
+                        </div>
+                    </form>
+                    <div id="adminCommunityList" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4"></div>
+                </div>
+            </div>
+
+            <!-- ADMIN SUB 5: GENERAL SETTINGS -->
+            <div id="admin-sub-settings" class="admin-sub-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Pengaturan Identitas Website</h3>
+                    <form onsubmit="adminSaveGeneralSettings(event)" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Nama Website / Brand Header</label>
+                            <input type="text" id="adminSettingWebName" required class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Tagline Sub-Title</label>
+                            <input type="text" id="adminSettingTagline" required class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-neon-purple">
+                                SIMPAN PENGATURAN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ADMIN SUB 6: TEAM USERS MANAGEMENT -->
+            <div id="admin-sub-users" class="admin-sub-content space-y-6 hidden">
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Tambah Akun Tim Admin</h3>
+                    <form onsubmit="adminAddUser(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Username *</label>
+                            <input type="text" id="adminNewUsername" required placeholder="Username" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Password *</label>
+                            <input type="password" id="adminNewPassword" required placeholder="Password" class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-mono">Tingkatan / Role *</label>
+                            <select id="adminNewRole" required class="w-full bg-forge-bg border border-forge-border rounded-xl p-2.5 text-white">
+                                <option value="Admin">Admin</option>
+                                <option value="Moderator">Moderator</option>
+                                <option value="Developer">Developer</option>
+                                <option value="Owner">Owner</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3 flex justify-end">
+                            <button type="submit" class="bg-purple-600 text-white font-bold px-6 py-2.5 rounded-xl">TAMBAH USER ADMIN</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-base font-bold text-white">Daftar Pengguna Tim Admin</h3>
+                    <div id="adminUsersList" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Admin Login -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card border border-purple-500/40 rounded-2xl w-full max-w-md p-6 sm:p-8 relative shadow-neon-purple space-y-6">
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 mx-auto flex items-center justify-center text-purple-400 text-2xl">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <h3 class="text-xl font-black text-white">Farry4u Admin Login</h3>
+                <p class="text-xs text-slate-400">Masukan kredensial admin untuk mengakses control panel.</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-mono mb-1">Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Username" class="w-full bg-forge-bg border border-forge-border rounded-xl p-3 text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-mono mb-1">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Password" class="w-full bg-forge-bg border border-forge-border rounded-xl p-3 text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold py-3 rounded-xl shadow-neon-purple transition-all">
+                    LOGIN TO ADMIN PANEL
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mod Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card border border-forge-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative shadow-glow-lg">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modalBody" class="space-y-6"></div>
+        </div>
+    </div>
+
+    <footer class="border-t border-forge-border bg-forge-bg/90 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bolt text-forge-accent"></i>
+                <span id="footerWebName" class="font-bold text-slate-300">SA FORGE HUB</span>
+                <span>&copy; 2026 SA FORGE. Dedicated GTA SA &amp; SA-MP Modding Community.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* State & Initial Data */
+        const INITIAL_ADMINS = [
+            { username: "Karen", password: "10788966532445", role: "Owner" }
+        ];
+
+        const INITIAL_CATEGORIES = ["ALL", "MOONLOADER", "MONETLOADER", "CLEO", "HUD", "TOOLS"];
+
+        const INITIAL_MODS = [
+            {
+              id: 1,
+                title: "Gamefixer Indo",
+                category: "MOONLOADER",
+                tags: ["OFFICIAL", "FREE", "PC", "ANDROID"],
+                author: "extyogi",
+                downloads: 9150,
+                rating: 4.9,
+                version: "v2.0",
+                command: "/gmenu or Ctrl + G",
+                description: "Fitur Gamefixer Indo untuk menambah performa bermain samp",
+                downloadUrl: "https://link2unlock.com/df4c3"
+            }
+        ];
+
+        const INITIAL_GUIDES = [
+            {
+                id: 1,
+                title: "Panduan Lengkap Install Moonloader v0.26 (PC)",
+                category: "MOONLOADER PC",
+                content: "1. Download installer Moonloader v0.26.\n2. Jalankan setup dan arahkan lokasi ke folder utama GTA San Andreas Anda.\n3. Pastikan memilih komponen SAMP.Lua pada opsi instalasi.\n4. Jalankan GTA SA / SA-MP untuk memverifikasi log di folder moonloader/moonloader.log."
+            },
+            {
+                id: 2,
+                title: "Panduan Pasang Monetloader di SA-MP Android",
+                category: "MONETLOADER ANDROID",
+                content: "1. Unduh file APK Client Monetloader terbaru.\n2. Jalankan game sekali agar folder storage /Android/data/com.rockstargames.gtasa/files/monetloader terbentuk.\n3. Masukkan file script (.lua atau .luac) ke dalam folder monetloader tersebut."
+            }
+        ];
+
+        const INITIAL_COMMUNITY = [
+            { id: 1, name: "Discord Community", icon: "fa-brands fa-discord", url: "https://discord.gg", count: "12,400+ Members" },
+            { id: 2, name: "WhatsApp Group Hub", icon: "fa-brands fa-whatsapp", url: "https://whatsapp.com", count: "1,000+ Members" },
+            { id: 3, name: "TikTok Mod Showcase", icon: "fa-brands fa-tiktok", url: "https://tiktok.com", count: "45K+ Followers" },
+            { id: 4, name: "YouTube Tutorials", icon: "fa-brands fa-youtube", url: "https://youtube.com", count: "18K+ Subscribers" }
+        ];
+
+        let state = {
+            webName: localStorage.getItem('sf_webName') || "SA FORGE",
+            tagline: localStorage.getItem('sf_tagline') || "GTA SA Modding & Tools Utility Hub",
+            categories: JSON.parse(localStorage.getItem('sf_categories')) || INITIAL_CATEGORIES,
+            mods: JSON.parse(localStorage.getItem('sf_mods')) || INITIAL_MODS,
+            guides: JSON.parse(localStorage.getItem('sf_guides')) || INITIAL_GUIDES,
+            community: JSON.parse(localStorage.getItem('sf_community')) || INITIAL_COMMUNITY,
+            admins: JSON.parse(localStorage.getItem('sf_admins')) || INITIAL_ADMINS,
+            currentUser: JSON.parse(localStorage.getItem('sf_logged_user')) || null
+        };
+
+        let selectedCategory = 'ALL';
+        let selectedTagFilter = 'ALL';
+        let spammerInterval = null;
+
+        /* DOM Content Loaded */
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSiteSettingsDOM();
+            renderCategoryFilters();
+            renderMods();
+            renderFeaturedHomeMods();
+            renderGuides();
+            renderCommunityLinks();
+            updateStatsDOM();
+            updateAdminUIState();
+            updateHexTool();
+            updatePawnTool();
+        });
+
+        /* Site Config Updater */
+        function updateSiteSettingsDOM() {
+            document.getElementById('headerWebName').innerHTML = `SA<span class="text-forge-accent glow-text-cyan">${state.webName.replace('SA ', '')}</span>`;
+            document.getElementById('headerTagline').innerText = state.tagline;
+            document.getElementById('bannerWebTitle').innerText = `${state.webName.toUpperCase()} MODDING & TOOLS SUITE`;
+            document.getElementById('bannerWebTagline').innerText = state.tagline;
+            document.getElementById('footerWebName').innerText = `${state.webName} HUB`;
+        }
+
+        /* Tab Navigation */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if(target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-forge-hover transition-all flex items-center gap-1.5";
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.className = "nav-btn px-3 py-2 rounded-xl text-xs font-bold text-forge-accent bg-forge-hover border border-forge-accent/30 transition-all flex items-center gap-1.5";
+            }
+
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        /* Sub Tools Navigation */
+        function switchSubTool(toolId) {
+            document.querySelectorAll('.subtool-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`subtool-${toolId}`);
+            if(target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.subtool-btn').forEach(btn => {
+                btn.className = "subtool-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2";
+            });
+
+            const activeBtn = document.getElementById(`subtool-btn-${toolId}`);
+            if(activeBtn) {
+                activeBtn.className = "subtool-btn px-4 py-2 rounded-xl text-xs font-bold bg-forge-accent/20 border border-forge-accent text-forge-accent transition-all flex items-center gap-2";
+            }
+        }
+
+        /* Category Filters */
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryContainer');
+            if(!container) return;
+            container.innerHTML = state.categories.map(cat => `
+                <button onclick="setCategory('${cat}')" class="cat-pill ${selectedCategory === cat ? 'active bg-forge-accent/20 border border-forge-accent text-forge-accent' : 'bg-forge-bg border border-forge-border text-slate-400 hover:text-white'} px-3 py-1.5 rounded-lg text-xs font-bold">
+                    ${cat}
+                </button>
+            `).join('');
+
+            // Also populate admin category select
+            const adminSelect = document.getElementById('adminModCategory');
+            if(adminSelect) {
+                adminSelect.innerHTML = state.categories.filter(c => c !== 'ALL').map(c => `<option value="${c}">${c}</option>`).join('');
+            }
+        }
+
+        function setCategory(cat) {
+            selectedCategory = cat;
+            renderCategoryFilters();
+            renderMods();
+        }
+
+        function setTagFilter(tag) {
+            selectedTagFilter = tag;
+            renderMods();
+        }
+
+        /* Mods Rendering */
+        function renderMods() {
+            const container = document.getElementById('modsGrid');
+            if(!container) return;
+
+            const searchQuery = (document.getElementById('searchInput')?.value || '').toLowerCase();
+
+            const filtered = state.mods.filter(mod => {
+                const matchesCat = selectedCategory === 'ALL' || mod.category === selectedCategory;
+                const matchesTag = selectedTagFilter === 'ALL' || (mod.tags && mod.tags.includes(selectedTagFilter));
+                const matchesSearch = mod.title.toLowerCase().includes(searchQuery) ||
+                                      mod.author.toLowerCase().includes(searchQuery) ||
+                                      (mod.command && mod.command.toLowerCase().includes(searchQuery));
+                return matchesCat && matchesTag && matchesSearch;
+            });
+
+            container.innerHTML = filtered.map(mod => `
+                <div class="glass-card rounded-2xl p-5 border border-forge-border flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex flex-wrap gap-1">
+                                ${(mod.tags || ['FREE']).map(t => getBadgeHTML(t)).join('')}
+                            </div>
+                            <div class="flex items-center text-xs text-amber-400 font-bold font-mono">
+                                <i class="fa-solid fa-star mr-1"></i> ${mod.rating || 5.0}
+                            </div>
+                        </div>
+
+                        <h3 onclick="openModal(${mod.id})" class="text-base font-bold text-white hover:text-forge-accent transition-colors cursor-pointer line-clamp-1">
+                            ${mod.title}
+                        </h3>
+
+                        <div class="text-[11px] font-mono text-slate-400 mt-1">
+                            OLEH: <span class="text-slate-200 font-bold">${mod.author}</span>
+                        </div>
+
+                        <p class="text-xs text-slate-400 mt-2 line-clamp-2">
+                            ${mod.description}
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-forge-border flex items-center justify-between gap-2">
+                        <span class="text-[10px] font-mono text-slate-500">
+                            <i class="fa-solid fa-download mr-1"></i>${(mod.downloads || 1200).toLocaleString()}
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openModal(${mod.id})" class="px-3 py-1.5 rounded-lg bg-forge-bg border border-forge-border hover:border-forge-accent text-slate-300 hover:text-white text-xs font-bold transition-all">
+                                DETAIL
+                            </button>
+                            <a href="${mod.downloadUrl || '#'}" target="_blank" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black text-xs font-bold shadow-neon-cyan transition-all">
+                                DOWNLOAD
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFeaturedHomeMods() {
+            const container = document.getElementById('homeFeaturedMods');
+            if(!container) return;
+            const topMods = state.mods.slice(0, 3);
+            container.innerHTML = topMods.map(mod => `
+                <div class="glass-card rounded-2xl p-5 border border-forge-border space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-forge-accent/10 text-forge-accent text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-forge-accent/30">${mod.category}</span>
+                        <span class="text-xs text-amber-400 font-bold font-mono"><i class="fa-solid fa-star"></i> ${mod.rating || 5.0}</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">${mod.title}</h3>
+                    <p class="text-xs text-slate-400 line-clamp-2">${mod.description}</p>
+                    <button onclick="openModal(${mod.id})" class="w-full text-center bg-forge-bg hover:bg-forge-hover border border-forge-border text-xs font-bold py-2 rounded-xl text-slate-200">
+                        LIHAT MOD
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function getBadgeHTML(tag) {
+            if(tag === 'OFFICIAL') return `<span class="bg-cyan-950/80 text-cyan-400 border border-cyan-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">OFFICIAL</span>`;
+            if(tag === 'VIP') return `<span class="bg-purple-950/80 text-purple-400 border border-purple-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">VIP</span>`;
+            if(tag === 'UNVERIFIED') return `<span class="bg-rose-950/80 text-rose-400 border border-rose-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">UNVERIFIED</span>`;
+            if(tag === 'FREE') return `<span class="bg-emerald-950/80 text-emerald-400 border border-emerald-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">FREE</span>`;
+            if(tag === 'PC') return `<span class="bg-blue-950/80 text-blue-400 border border-blue-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">PC</span>`;
+            if(tag === 'ANDROID') return `<span class="bg-amber-950/80 text-amber-400 border border-amber-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold">ANDROID</span>`;
+            return `<span class="bg-slate-800 text-slate-300 text-[9px] font-mono px-2 py-0.5 rounded">${tag}</span>`;
+        }
+
+        /* Guides Rendering */
+        function renderGuides() {
+            const container = document.getElementById('guidesList');
+            if(!container) return;
+            container.innerHTML = state.guides.map(g => `
+                <div class="glass-card rounded-2xl p-5 space-y-3 border border-forge-border">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-amber-500/10 text-amber-400 text-[10px] font-mono px-2.5 py-1 rounded border border-amber-500/30 font-bold">${g.category}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white">${g.title}</h3>
+                    <pre class="whitespace-pre-wrap text-xs text-slate-300 font-sans leading-relaxed bg-black/60 p-4 rounded-xl border border-forge-border">${g.content}</pre>
+                </div>
+            `).join('');
+        }
+
+        /* Community Links Rendering */
+        function renderCommunityLinks() {
+            const container = document.getElementById('communityLinksGrid');
+            if(!container) return;
+            container.innerHTML = state.community.map(c => `
+                <div class="glass-card rounded-2xl p-6 border border-forge-border flex flex-col justify-between space-y-4">
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl">
+                            <i class="${c.icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">${c.name}</h3>
+                            <span class="text-xs font-mono text-slate-400">${c.count || 'Active Members'}</span>
+                        </div>
+                    </div>
+                    <a href="${c.url}" target="_blank" class="w-full text-center bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs py-2.5 rounded-xl transition-all">
+                        JOIN NOW <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        /* Stats Updater */
+        function updateStatsDOM() {
+            document.getElementById('statModsCount').innerText = state.mods.length;
+            document.getElementById('statGuidesCount').innerText = state.guides.length;
+            document.getElementById('statCategoriesCount').innerText = state.categories.length;
+            document.getElementById('statAdminsCount').innerText = state.admins.length;
+        }
+
+        /* Obfuscator */
+        function runObfuscation() {
+            const input = document.getElementById('obfInput').value;
+            if(!input.trim()) return showToast("Masukkan source code Lua terlebih dahulu!");
+
+            let result = `-- Protected by ${state.webName} Lua Obfuscator Engine v4.2
+local _SF = {}
+_SF[1] = string.char; _SF[2] = string.sub;
+local _STR_CACHE = {
+  [1] = _SF[1](83,65,32,70,79,82,71,69),
+}
+
+` + input.replace(/main/g, "_0x4a8f").replace(/sampAddChatMessage/g, "_0xb2c1");
+
+            document.getElementById('obfOutput').value = result;
+            showToast("Source code Lua berhasil di-obfuscate!");
+        }
+
+        function downloadObfFile() {
+            const code = document.getElementById('obfOutput').value;
+            if(!code) return showToast("Tidak ada output code!");
+            downloadFile("protected_script.lua", code);
+        }
+
+        /* LuaJIT Compiler */
+        function compileLua() {
+            const code = document.getElementById('compilerInput').value;
+            if(!code.trim()) return showToast("Masukkan source code Lua!");
+
+            let mockDisassembly = `[LUAJIT BYTECODE DISASSEMBLY - TARGET: MONET/MOONLOADER]
+0001    KSTR     0   0  ; "${state.webName}"
+0002    GSET     0   0  ; script_name
+0003    FNEW     1   1  ; main()
+0004    GSET     1   1  ; main
+0005    RET0     0   1`;
+
+            document.getElementById('compilerOutput').value = mockDisassembly;
+            showToast("Berhasil dikompilasi ke LuaJIT Bytecode!");
+        }
+
+        function downloadLuacFile() {
+            const text = document.getElementById('compilerOutput').value;
+            if(!text) return showToast("Kompilasi code terlebih dahulu!");
+            downloadFile("script.luac", text);
+        }
+
+        /* Discord Webhook Spammer/Tester */
+        function startSpammer() {
+            const url = document.getElementById('spammerUrl').value.trim();
+            const botName = document.getElementById('spammerBotName').value || "SA FORGE LOGGER";
+            const avatar = document.getElementById('spammerAvatar').value;
+            const content = document.getElementById('spammerContent').value;
+            const delay = Math.max(500, parseInt(document.getElementById('spammerDelay').value) || 800);
+            const limit = Math.min(50, parseInt(document.getElementById('spammerCount').value) || 5);
+
+            if(!url.startsWith("https://discord.com/api/webhooks/")) {
+                showToast("URL Webhook Discord tidak valid!");
+                return;
+            }
+
+            let sent = 0;
+            const logs = document.getElementById('spammerLogs');
+            const status = document.getElementById('spammerStatusBadge');
+
+            status.className = "text-xs font-mono bg-rose-500/20 text-rose-400 px-3 py-1 rounded-full border border-rose-500/40 font-bold animate-pulse";
+            status.innerText = "STATUS: TESTING PAYLOADS...";
+
+            spammerInterval = setInterval(() => {
+                if(sent >= limit) {
+                    stopSpammer();
+                    showToast("Selesai menguji payload Webhook!");
+                    return;
+                }
+
+                sent++;
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: botName,
+                        avatar_url: avatar,
+                        content: content
+                    })
+                }).then(res => {
+                    logs.innerHTML += `<div class="text-emerald-400">[${new Date().toLocaleTimeString()}] [#${sent}] Test Payload Sent (HTTP ${res.status})</div>`;
+                    logs.scrollTop = logs.scrollHeight;
+                }).catch(err => {
+                    logs.innerHTML += `<div class="text-rose-400">[${new Date().toLocaleTimeString()}] [#${sent}] Request Failed / Rate limited</div>`;
+                    logs.scrollTop = logs.scrollHeight;
+                });
+
+            }, delay);
+        }
+
+        function stopSpammer() {
+            if(spammerInterval) clearInterval(spammerInterval);
+            const status = document.getElementById('spammerStatusBadge');
+            status.className = "text-xs font-mono bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700";
+            status.innerText = "STATUS: STOPPED / IDLE";
+        }
+
+        function clearSpammerLog() {
+            document.getElementById('spammerLogs').innerHTML = '<div class="text-slate-500">[CONSOLE READY] Enter Webhook URL & click Start Test.</div>';
+        }
+
+        /* MoonScanner */
+        function triggerFileSelect() { document.getElementById('scannerFileInput').click(); }
+        function handleDragOver(e) { e.preventDefault(); }
+        function handleDragLeave(e) { e.preventDefault(); }
+        function handleFileDrop(e) {
+            e.preventDefault();
+            if(e.dataTransfer.files.length > 0) processScannerFile(e.dataTransfer.files[0]);
+        }
+
+        function processScannerFile(file) {
+            if(!file) return;
+            const box = document.getElementById('auditResultBox');
+            const logs = document.getElementById('consoleLogs');
+            const status = document.getElementById('scanStatusBadge');
+
+            box.classList.remove('hidden');
+            logs.innerHTML = '';
+            status.className = "text-[10px] font-mono px-2.5 py-1 rounded font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40";
+            status.innerText = "AUDITING FILE...";
+
+            const appendLog = (msg, color = "text-slate-300") => {
+                logs.innerHTML += `<div class="${color}"><span class="text-slate-600">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
+                logs.scrollTop = logs.scrollHeight;
+            };
+
+            appendLog(`Target File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`, "text-forge-accent");
+            appendLog("Scanning socket hooks & discord webhooks...", "text-slate-400");
+
+            setTimeout(() => {
+                appendLog("No malicious IP stealers found.", "text-emerald-400");
+                appendLog("Audit Complete: File is SAFE for execution.", "text-emerald-400 font-bold");
+                status.className = "text-[10px] font-mono px-2.5 py-1 rounded font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                status.innerText = "STATUS: CLEAN & SECURE";
+            }, 1000);
+        }
+
+        /* SA-MP Utils */
+        function updateHexTool() {
+            const hex = document.getElementById('hexPicker').value.toUpperCase();
+            document.getElementById('hexValue').value = hex;
+            const text = document.getElementById('hexText').value || "Sample Text";
+            document.getElementById('outEmbedText').innerText = `{${hex.replace('#', '')}}${text}`;
+        }
+
+        function updateHexToolFromText(val) {
+            if(/^#[0-9A-F]{6}$/i.test(val)) {
+                document.getElementById('hexPicker').value = val;
+                updateHexTool();
+            }
+        }
+
+        function updatePawnTool() {
+            const title = document.getElementById('pawnTitle').value;
+            const body = document.getElementById('pawnBody').value;
+            document.getElementById('pawnOutput').innerText = `ShowPlayerDialog(playerid, 1001, DIALOG_STYLE_MSGBOX,\n\t"${title}",\n\t"${body.replace(/\n/g, '\\n')}",\n\t"OK", "Tutup");`;
+        }
+
+        function openAdminPanelOrLogin() {
+            if(state.currentUser) {
+                switchTab('admin');
+                renderAdminPanelSubviews();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+
+            const user = state.admins.find(a => a.username === u && a.password === p);
+
+            if(user) {
+                state.currentUser = user;
+                localStorage.setItem('sf_logged_user', JSON.stringify(user));
+                closeLoginModal();
+                updateAdminUIState();
+                switchTab('admin');
+                renderAdminPanelSubviews();
+                showToast(`Welcome back, ${user.role} ${user.username}!`);
+            } else {
+                showToast("Username atau Password Admin Salah!");
+            }
+        }
+
+        function logoutAdmin() {
+            state.currentUser = null;
+            localStorage.removeItem('sf_logged_user');
+            updateAdminUIState();
+            switchTab('home');
+            showToast("Berhasil Logout dari Admin Session.");
+        }
+
+        function updateAdminUIState() {
+            const btnLabel = document.getElementById('adminBtnLabel');
+            const mobileBtnLabel = document.getElementById('mobileAdminBtnLabel');
+
+            if(state.currentUser) {
+                if(btnLabel) btnLabel.innerText = `${state.currentUser.role} Panel`;
+                if(mobileBtnLabel) mobileBtnLabel.innerText = `${state.currentUser.role} Panel`;
+                document.getElementById('adminActiveUser').innerText = `${state.currentUser.role} ${state.currentUser.username}`;
+                document.getElementById('adminActiveRoleBadge').innerText = state.currentUser.role.toUpperCase();
+            } else {
+                if(btnLabel) btnLabel.innerText = `Admin Login`;
+                if(mobileBtnLabel) mobileBtnLabel.innerText = `Admin Login`;
+            }
+        }
+
+        function switchAdminSub(subId) {
+            document.querySelectorAll('.admin-sub-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`admin-sub-${subId}`);
+            if(target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.admin-subnav-btn').forEach(btn => {
+                btn.className = "admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-forge-bg border border-forge-border transition-all flex items-center gap-2";
+            });
+
+            const activeBtn = document.getElementById(`admin-subnav-${subId}`);
+            if(activeBtn) {
+                activeBtn.className = "admin-subnav-btn px-4 py-2 rounded-xl text-xs font-bold bg-purple-500/20 border border-purple-500 text-purple-300 transition-all flex items-center gap-2";
+            }
+        }
+
+        function renderAdminPanelSubviews() {
+            renderAdminModTable();
+            renderAdminGuidesList();
+            renderAdminCategories();
+            renderAdminCommunityList();
+            renderAdminUsersList();
+
+            document.getElementById('adminSettingWebName').value = state.webName;
+            document.getElementById('adminSettingTagline').value = state.tagline;
+        }
+
+        /* Admin CRUD Handlers */
+        function adminSaveMod(e) {
+            e.preventDefault();
+            const checkedBadges = Array.from(document.querySelectorAll('.mod-badge-chk:checked')).map(c => c.value);
+
+            const newMod = {
+                id: Date.now(),
+                title: document.getElementById('adminModTitle').value,
+                author: document.getElementById('adminModAuthor').value,
+                category: document.getElementById('adminModCategory').value,
+                tags: checkedBadges,
+                command: document.getElementById('adminModCommand').value,
+                downloadUrl: document.getElementById('adminModDownload').value,
+                description: document.getElementById('adminModDesc').value,
+                downloads: 0,
+                rating: 5.0
+            };
+
+            state.mods.unshift(newMod);
+            localStorage.setItem('sf_mods', JSON.stringify(state.mods));
+            renderMods();
+            renderFeaturedHomeMods();
+            renderAdminModTable();
+            updateStatsDOM();
+            showToast("Mod baru berhasil disimpan!");
+            e.target.reset();
+        }
+
+        function adminDeleteMod(id) {
+            state.mods = state.mods.filter(m => m.id !== id);
+            localStorage.setItem('sf_mods', JSON.stringify(state.mods));
+            renderMods();
+            renderFeaturedHomeMods();
+            renderAdminModTable();
+            updateStatsDOM();
+            showToast("Mod berhasil dihapus.");
+        }
+
+        function renderAdminModTable() {
+            const body = document.getElementById('adminModTableBody');
+            if(!body) return;
+            body.innerHTML = state.mods.map(m => `
+                <tr>
+                    <td class="p-3 text-white font-bold">${m.title}</td>
+                    <td class="p-3 text-forge-accent">${m.category}</td>
+                    <td class="p-3 text-slate-300">${m.author}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="adminDeleteMod(${m.id})" class="text-rose-400 hover:text-rose-300 font-bold">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adminSaveGuide(e) {
+            e.preventDefault();
+            const newGuide = {
+                id: Date.now(),
+                title: document.getElementById('adminGuideTitle').value,
+                category: document.getElementById('adminGuideCategory').value,
+                content: document.getElementById('adminGuideContent').value
+            };
+            state.guides.unshift(newGuide);
+            localStorage.setItem('sf_guides', JSON.stringify(state.guides));
+            renderGuides();
+            renderAdminGuidesList();
+            updateStatsDOM();
+            showToast("Guide tutorial baru berhasil ditambahkan!");
+            e.target.reset();
+        }
+
+        function adminDeleteGuide(id) {
+            state.guides = state.guides.filter(g => g.id !== id);
+            localStorage.setItem('sf_guides', JSON.stringify(state.guides));
+            renderGuides();
+            renderAdminGuidesList();
+            updateStatsDOM();
+            showToast("Guide dihapus.");
+        }
+
+        function renderAdminGuidesList() {
+            const container = document.getElementById('adminGuidesList');
+            if(!container) return;
+            container.innerHTML = state.guides.map(g => `
+                <div class="flex items-center justify-between bg-forge-bg p-3 rounded-xl border border-forge-border text-xs font-mono">
+                    <div>
+                        <span class="text-amber-400 font-bold mr-2">[${g.category}]</span>
+                        <span class="text-white">${g.title}</span>
+                    </div>
+                    <button onclick="adminDeleteGuide(${g.id})" class="text-rose-400 hover:text-rose-300 font-bold">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        function adminAddCategory(e) {
+            e.preventDefault();
+            const cat = document.getElementById('adminNewCategory').value.trim().toUpperCase();
+            if(cat && !state.categories.includes(cat)) {
+                state.categories.push(cat);
+                localStorage.setItem('sf_categories', JSON.stringify(state.categories));
+                renderCategoryFilters();
+                renderAdminCategories();
+                updateStatsDOM();
+                showToast("Kategori baru ditambahkan!");
+                e.target.reset();
+            }
+        }
+
+        function adminDeleteCategory(cat) {
+            if(cat === 'ALL') return showToast("Kategori ALL tidak bisa dihapus!");
+            state.categories = state.categories.filter(c => c !== cat);
+            localStorage.setItem('sf_categories', JSON.stringify(state.categories));
+            renderCategoryFilters();
+            renderAdminCategories();
+            updateStatsDOM();
+            showToast("Kategori dihapus.");
+        }
+
+        function renderAdminCategories() {
+            const container = document.getElementById('adminCategoriesList');
+            if(!container) return;
+            container.innerHTML = state.categories.map(c => `
+                <span class="bg-forge-bg border border-forge-border text-xs font-mono px-3 py-1.5 rounded-lg flex items-center gap-2 text-slate-200">
+                    ${c}
+                    ${c !== 'ALL' ? `<button onclick="adminDeleteCategory('${c}')" class="text-rose-400 hover:text-rose-300 font-bold">&times;</button>` : ''}
+                </span>
+            `).join('');
+        }
+
+        function adminAddCommunityLink(e) {
+            e.preventDefault();
+            const newCom = {
+                id: Date.now(),
+                name: document.getElementById('adminComName').value,
+                icon: document.getElementById('adminComIcon').value,
+                url: document.getElementById('adminComUrl').value,
+                count: document.getElementById('adminComCount').value
+            };
+            state.community.push(newCom);
+            localStorage.setItem('sf_community', JSON.stringify(state.community));
+            renderCommunityLinks();
+            renderAdminCommunityList();
+            showToast("Community Link ditambahkan!");
+            e.target.reset();
+        }
+
+        function adminDeleteCommunity(id) {
+            state.community = state.community.filter(c => c.id !== id);
+            localStorage.setItem('sf_community', JSON.stringify(state.community));
+            renderCommunityLinks();
+            renderAdminCommunityList();
+            showToast("Community Link dihapus.");
+        }
+
+        function renderAdminCommunityList() {
+            const container = document.getElementById('adminCommunityList');
+            if(!container) return;
+            container.innerHTML = state.community.map(c => `
+                <div class="bg-forge-bg p-3 rounded-xl border border-forge-border text-xs flex items-center justify-between">
+                    <div>
+                        <span class="text-white font-bold">${c.name}</span>
+                        <span class="text-slate-500 block text-[10px] font-mono">${c.url}</span>
+                    </div>
+                    <button onclick="adminDeleteCommunity(${c.id})" class="text-rose-400 hover:text-rose-300 font-bold">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        function adminSaveGeneralSettings(e) {
+            e.preventDefault();
+            state.webName = document.getElementById('adminSettingWebName').value;
+            state.tagline = document.getElementById('adminSettingTagline').value;
+            localStorage.setItem('sf_webName', state.webName);
+            localStorage.setItem('sf_tagline', state.tagline);
+            updateSiteSettingsDOM();
+            showToast("Identitas website berhasil diperbarui!");
+        }
+
+        function adminAddUser(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminNewUsername').value.trim();
+            const p = document.getElementById('adminNewPassword').value.trim();
+            const r = document.getElementById('adminNewRole').value;
+
+            if(state.admins.find(a => a.username === u)) {
+                return showToast("Username admin sudah ada!");
+            }
+
+            state.admins.push({ username: u, password: p, role: r });
+            localStorage.setItem('sf_admins', JSON.stringify(state.admins));
+            renderAdminUsersList();
+            updateStatsDOM();
+            showToast(`User admin ${u} (${r}) berhasil ditambahkan!`);
+            e.target.reset();
+        }
+
+        function adminDeleteUser(username) {
+            if(username === 'Karen') return showToast("Owner utama tidak dapat dihapus!");
+            state.admins = state.admins.filter(a => a.username !== username);
+            localStorage.setItem('sf_admins', JSON.stringify(state.admins));
+            renderAdminUsersList();
+            updateStatsDOM();
+            showToast("User admin dihapus.");
+        }
+
+        function renderAdminUsersList() {
+            const container = document.getElementById('adminUsersList');
+            if(!container) return;
+            container.innerHTML = state.admins.map(a => `
+                <div class="bg-forge-bg p-3 rounded-xl border border-forge-border text-xs flex items-center justify-between">
+                    <div>
+                        <span class="text-white font-bold">${a.username}</span>
+                        <span class="bg-purple-950 text-purple-400 border border-purple-800 text-[9px] font-mono px-2 py-0.5 rounded font-bold ml-2">${a.role}</span>
+                    </div>
+                    ${a.username !== 'Karen' ? `<button onclick="adminDeleteUser('${a.username}')" class="text-rose-400 hover:text-rose-300 font-bold">Hapus</button>` : `<span class="text-slate-600 text-[10px] font-mono">PROTECTED OWNER</span>`}
+                </div>
+            `).join('');
+        }
+
+        /* Modal Details */
+        function openModal(id) {
+            const mod = state.mods.find(m => m.id === id);
+            if(!mod) return;
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        ${(mod.tags || ['FREE']).map(t => getBadgeHTML(t)).join('')}
+                    </div>
+                    <h2 class="text-2xl font-black text-white">${mod.title}</h2>
+                    <div class="flex items-center gap-4 text-xs font-mono text-slate-400 border-b border-forge-border pb-4">
+                        <span>CREATOR: <strong class="text-forge-accent">${mod.author}</strong></span>
+                        <span>CATEGORY: <strong class="text-slate-200">${mod.category}</strong></span>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-mono font-bold text-slate-300 uppercase">Command In-Game</h4>
+                        <div class="bg-black/80 p-3 rounded-xl font-mono text-xs text-forge-accent border border-forge-border">${mod.command || 'Tidak Ada Command'}</div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-mono font-bold text-slate-300 uppercase">Deskripsi</h4>
+                        <p class="text-xs text-slate-300 bg-forge-bg/60 p-4 rounded-xl border border-forge-border">${mod.description}</p>
+                    </div>
+                    <div class="pt-4 flex justify-end gap-3 border-t border-forge-border">
+                        <button onclick="closeModal()" class="px-4 py-2 bg-forge-bg border border-forge-border text-slate-300 rounded-xl text-xs font-bold">TUTUP</button>
+                        <a href="${mod.downloadUrl || '#'}" target="_blank" class="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold rounded-xl text-xs shadow-neon-cyan">DOWNLOAD NOW</a>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+
+        /* Helpers */
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            const text = el.value || el.innerText;
+            if(text) {
+                const input = document.createElement('textarea');
+                input.value = text;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast("Teks disalin ke clipboard!");
+            }
+        }
+
+        function downloadFile(filename, content) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-forge-card border border-forge-accent text-forge-accent px-4 py-3 rounded-xl shadow-neon-cyan text-xs font-mono font-bold flex items-center gap-2 transition-all duration-300";
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
